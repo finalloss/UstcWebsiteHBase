@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .search-box {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .result-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .result-item h2 {
+            margin: 0;
+            color: #007bff;
+        }
+        .result-item a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .result-item a:hover {
+            color: #0056b3;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            padding: 8px 16px;
+            margin: 0 4px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .pagination a:hover {
+            border-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-box">
+        <form action="/multi" method="get">
+            <input type="text" name="query" value="{{ request.args.query }}" required>
+            <input type="submit" value="Search">
+        </form>
+    </div>
+
+    <h1>Search Results</h1>
+    {% for result in results %}
+        <div class="result-item">
+            <h2><a href="{{ result._source.link }}">{{ result._source.title }}</a></h2>
+            <p>{{ result._source.date }}</p>
+        </div>
+    {% endfor %}
+
+    <div class="pagination">
+    {% set max_pages_shown = 3 %}  <!-- Maximum number of pages to display in the pagination -->
+
+    {% for p in range(1, total_pages + 1) %}
+        {% if p <= max_pages_shown or total_pages - p < max_pages_shown or current_page - 2 <= p and p <= current_page + 2 %}
+            <a href="/multi?query={{ query }}&page={{ p }}" class="{% if p == current_page %}current{% endif %}">{{ p }}</a>
+        {% elif p == current_page + 3 or p == current_page - 3 %}
+            <span>...</span>
+        {% endif %}
+    {% endfor %}
+</div>
+
+</body>
+</html>
